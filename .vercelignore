@@ -1,0 +1,6 @@
+# Legacy XAMPP/PHP backend: never upload these to Vercel.
+admin.php
+register.php
+config.php
+schema.sql
+.env.local

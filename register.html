@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — FRACTURE // POINT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F2EB;
+    --ink:#0c0c0c;
+    --red:#E63B2E;
+    --line: rgba(12,12,12,0.08);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0/56px 56px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0/56px 56px,
+      var(--cream);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding:60px 20px;
+    display:flex;
+    justify-content:center;
+  }
+  .wrap{ width:100%; max-width:580px; }
+  .back{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Space Mono', monospace;
+    font-size:12px; letter-spacing:0.02em;
+    color:var(--ink); text-decoration:none;
+    opacity:0.6; margin-bottom:28px;
+    transition: opacity .3s var(--ease), color .3s var(--ease);
+  }
+  .back:hover{ opacity:1; color:var(--red); }
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    padding:44px 40px;
+    position:relative;
+  }
+  .card::before, .card::after{
+    content:''; position:absolute; width:14px; height:14px;
+    border:2px solid var(--red);
+  }
+  .card::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+  .card::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+  .eyebrow{
+    font-family:'Space Mono', monospace; font-size:11px;
+    color:var(--red); letter-spacing:0.08em; margin-bottom:14px;
+  }
+  h1{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:900; font-size:32px; line-height:1.1;
+    margin-bottom:8px;
+  }
+  .sub{ font-size:14px; opacity:0.65; margin-bottom:32px; line-height:1.5; }
+  label{
+    display:block; font-family:'Space Mono', monospace;
+    font-size:11px; letter-spacing:0.04em; opacity:0.6;
+    margin-bottom:6px; margin-top:18px;
+  }
+  label:first-of-type{ margin-top:0; }
+  input{
+    width:100%; padding:12px 14px;
+    border:1px solid rgba(12,12,12,0.15);
+    background:var(--cream);
+    font-family:'Inter', sans-serif; font-size:14px; color:var(--ink);
+    transition: border-color .25s var(--ease), background .25s var(--ease);
+  }
+  input:focus{
+    outline:none; border-color:var(--red); background:#fff;
+  }
+  .hint{ font-size:11px; opacity:0.5; margin-top:5px; }
+  .field-err{ color:var(--red); font-size:11px; margin-top:5px; display:none; }
+  .field-err.show{ display:block; }
+
+  .section-title{
+    font-family:'Space Mono', monospace; font-size:11px;
+    letter-spacing:0.06em; opacity:0.5;
+    margin-top:36px; margin-bottom:2px;
+    padding-top:20px; border-top:1px solid var(--line);
+  }
+  .member{
+    border:1px solid var(--line);
+    padding:18px 18px 8px;
+    margin-top:16px;
+    position:relative;
+  }
+  .member-tag{
+    font-family:'Space Mono', monospace; font-size:11px;
+    letter-spacing:0.04em; color:var(--red);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .remove-member{
+    background:none; border:none; color:var(--ink);
+    opacity:0.4; font-family:'Space Mono', monospace; font-size:11px;
+    cursor:pointer; padding:2px 6px;
+    transition: opacity .2s var(--ease), color .2s var(--ease);
+  }
+  .remove-member:hover{ opacity:1; color:var(--red); }
+
+  .add-member{
+    width:100%; margin-top:16px; padding:12px;
+    background:transparent; border:1px dashed rgba(12,12,12,0.25);
+    color:var(--ink); font-family:'Space Mono', monospace; font-size:12px;
+    letter-spacing:0.04em; cursor:pointer;
+    transition: border-color .25s var(--ease), color .25s var(--ease);
+  }
+  .add-member:hover{ border-color:var(--red); color:var(--red); }
+  .add-member:disabled{ opacity:0.35; cursor:not-allowed; }
+
+  button.submit{
+    width:100%; margin-top:32px; padding:15px;
+    background:var(--ink); color:#fff; border:none;
+    font-family:'Space Mono', monospace; font-size:13px;
+    letter-spacing:0.06em; cursor:pointer;
+    transition: background .3s var(--ease), transform .2s var(--ease);
+  }
+  button.submit:hover{ background:var(--red); transform:translateY(-1px); }
+  button.submit:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+
+  .msg{
+    margin-top:18px; padding:12px 14px; font-size:13px;
+    display:none; border-left:3px solid var(--red);
+  }
+  .msg.show{ display:block; }
+  .msg.ok{ border-color:#1e8e4f; background:rgba(30,142,79,0.08); }
+  .msg.err{ border-color:var(--red); background:rgba(230,59,46,0.08); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a href="index.html" class="back">&larr; back to site</a>
+
+  <form class="card" id="regForm" novalidate>
+    <div class="eyebrow">// REGISTRATION</div>
+    <h1>Enter the<br>hackathon</h1>
+    <p class="sub">Register your team for FRACTURE // POINT. One entry per team.</p>
+
+    <label for="team_name">Team name *</label>
+    <input type="text" id="team_name" name="team_name" required>
+    <div class="field-err" id="err_team_name">Enter a team name.</div>
+
+    <label for="leader_name">Team leader name *</label>
+    <input type="text" id="leader_name" name="leader_name" required>
+    <div class="hint">Must be a final-year student.</div>
+    <div class="field-err" id="err_leader_name">Enter the team leader's name.</div>
+
+    <div class="section-title">// TEAM MEMBERS</div>
+    <div id="membersList"></div>
+    <button type="button" class="add-member" id="addMemberBtn">+ Add member</button>
+
+    <button type="submit" class="submit" id="submitBtn">Register</button>
+    <div class="msg" id="formMsg"></div>
+  </form>
+</div>
+
+<template id="memberTemplate">
+  <div class="member">
+    <div class="member-tag">
+      <span class="member-label"></span>
+      <button type="button" class="remove-member">remove</button>
+    </div>
+    <label>Name *</label>
+    <input type="text" class="member-name" required>
+    <div class="field-err member-name-err">Enter this member's name.</div>
+    <label>Class *</label>
+    <input type="text" class="member-class" placeholder="e.g. 3rd Year CSE" required>
+    <div class="field-err member-class-err">Enter this member's class.</div>
+  </div>
+</template>
+
+<script>
+(function(){
+  const form         = document.getElementById('regForm');
+  const msg          = document.getElementById('formMsg');
+  const btn          = document.getElementById('submitBtn');
+  const membersList  = document.getElementById('membersList');
+  const addMemberBtn = document.getElementById('addMemberBtn');
+  const template     = document.getElementById('memberTemplate');
+
+  const MIN_MEMBERS = 1;   // at least one member besides the leader
+  const MAX_MEMBERS = 5;   // so a team tops out at 6 people (leader + 5)
+
+  function refreshLabelsAndButtons(){
+    const members = membersList.querySelectorAll('.member');
+    members.forEach((el, i) => {
+      el.querySelector('.member-label').textContent = 'Member ' + (i + 1);
+      const removeBtn = el.querySelector('.remove-member');
+      removeBtn.style.display = (members.length > MIN_MEMBERS) ? 'inline' : 'none';
+    });
+    addMemberBtn.disabled = members.length >= MAX_MEMBERS;
+  }
+
+  function addMember(){
+    if (membersList.querySelectorAll('.member').length >= MAX_MEMBERS) return;
+    const node = template.content.cloneNode(true);
+    node.querySelector('.remove-member').addEventListener('click', function(e){
+      e.target.closest('.member').remove();
+      refreshLabelsAndButtons();
+    });
+    membersList.appendChild(node);
+    refreshLabelsAndButtons();
+  }
+
+  for (let i = 0; i < MIN_MEMBERS; i++) addMember();
+  addMemberBtn.addEventListener('click', addMember);
+
+  function showFieldError(id, show){
+    const el = document.getElementById('err_' + id);
+    if(el) el.classList.toggle('show', !!show);
+  }
+
+  function collectMembers(){
+    const members = [];
+    membersList.querySelectorAll('.member').forEach((el) => {
+      const name = el.querySelector('.member-name').value.trim();
+      const cls  = el.querySelector('.member-class').value.trim();
+      el.querySelector('.member-name-err').classList.toggle('show', !name);
+      el.querySelector('.member-class-err').classList.toggle('show', !cls);
+      members.push({ name, class_name: cls });
+    });
+    return members;
+  }
+
+  function validate(data, members){
+    let ok = true;
+    if(!data.team_name.trim()){ showFieldError('team_name', true); ok = false; } else showFieldError('team_name', false);
+    if(!data.leader_name.trim()){ showFieldError('leader_name', true); ok = false; } else showFieldError('leader_name', false);
+    members.forEach(m => { if(!m.name || !m.class_name) ok = false; });
+    return ok;
+  }
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    msg.className = 'msg';
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    const members = collectMembers();
+
+    if(!validate(data, members)) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try{
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          team_name: data.team_name,
+          leader_name: data.leader_name,
+          members: members
+        })
+      });
+      const result = await res.json();
+
+      if(result.success){
+        msg.textContent = result.message || 'Registered successfully.';
+        msg.className = 'msg show ok';
+        form.reset();
+        membersList.innerHTML = '';
+        for (let i = 0; i < MIN_MEMBERS; i++) addMember();
+      } else {
+        msg.textContent = result.message || 'Something went wrong. Please try again.';
+        msg.className = 'msg show err';
+      }
+    } catch(err){
+      msg.textContent = 'Network error — please try again.';
+      msg.className = 'msg show err';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Register';
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
