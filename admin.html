@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — MIDNIGHT // COMPILE</title>
+<title>Admin — HACKTHON</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{--cream:#F7F2EB;--ink:#0c0c0c;--red:#E63B2E;--line:rgba(12,12,12,.1)}
@@ -11,7 +11,7 @@
   h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:26px;margin:0}.login{max-width:360px;margin:80px auto;background:#fff;border:1px solid var(--line);padding:32px}
   input{width:100%;padding:12px;margin:14px 0;border:1px solid rgba(12,12,12,.2);background:var(--cream);font-family:Inter,sans-serif}.button{width:100%;padding:13px;background:var(--ink);color:#fff;border:0;font-family:'Space Mono',monospace;cursor:pointer}
   .back-home{display:block;margin-top:12px;text-align:center;font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);text-decoration:none;opacity:.65}.back-home:hover{color:var(--red);opacity:1}.err{color:var(--red);font-size:13px;min-height:18px}
-  .topbar{display:flex;justify-content:space-between;align-items:center;max-width:1000px;margin:0 auto 20px}.logout{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);opacity:.65;text-decoration:none;background:transparent;border:0;cursor:pointer}
+  .topbar{display:flex;justify-content:space-between;align-items:center;max-width:1000px;margin:0 auto 20px}.topbar-actions{display:flex;align-items:center;gap:16px}.logout,.export{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);opacity:.65;text-decoration:none;background:transparent;border:0;cursor:pointer}.export{color:#fff;background:var(--red);opacity:1;padding:9px 12px}.export:hover,.logout:hover{opacity:1}
   table{width:100%;max-width:1000px;margin:0 auto;border-collapse:collapse;background:#fff}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}th{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.05em;opacity:.6}.leader-tag{color:var(--red);font-family:'Space Mono',monospace;font-size:10px}.empty{text-align:center;padding:40px;opacity:.5;font-family:'Space Mono',monospace}.hidden{display:none}
 </style>
 </head>
@@ -26,7 +26,7 @@
     </form>
   </main>
   <main id="teamsView" class="hidden">
-    <div class="topbar"><h1>Registered teams</h1><button class="logout" id="logoutBtn">log out</button></div>
+    <div class="topbar"><h1>Registered teams</h1><div class="topbar-actions"><button class="export" id="exportBtn">Export Excel</button><button class="logout" id="logoutBtn">log out</button></div></div>
     <div id="teamContent"></div>
   </main>
 <script>
@@ -52,6 +52,7 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
   if (response.ok) loadTeams(); else error.textContent = result.message || 'Could not sign in.';
 });
 document.getElementById('logoutBtn').addEventListener('click', async () => { await fetch('/api/admin', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})}); location.reload(); });
+document.getElementById('exportBtn').addEventListener('click', () => { window.location.href = '/api/admin?export=csv'; });
 loadTeams();
 </script>
 </body>

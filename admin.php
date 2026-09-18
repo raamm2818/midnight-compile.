@@ -25,13 +25,50 @@ if (isset($_GET['logout'])) {
 }
 
 $authed = !empty($_SESSION['admin_authed']);
+
+if ($authed && ($_GET['export'] ?? '') === 'csv') {
+    try {
+        $pdo = get_db_connection();
+        $regs = $pdo->query('SELECT * FROM registrations ORDER BY created_at DESC')->fetchAll();
+        $memberStmt = $pdo->prepare('SELECT member_name, member_class FROM team_members WHERE registration_id = :id ORDER BY position ASC');
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="hackthon-registrations.csv"');
+        header('Cache-Control: no-store');
+        echo "\xEF\xBB\xBF"; // UTF-8 BOM so Excel reads names correctly.
+        $output = fopen('php://output', 'w');
+        $safeForSpreadsheet = static function ($value): string {
+            $value = (string) $value;
+            return preg_match('/^[=+\-@]/', $value) ? "'" . $value : $value;
+        };
+        fputcsv($output, ['Team Name', 'Leader Name', 'Member Names', 'Member Classes', 'Registered At']);
+
+        foreach ($regs as $r) {
+            $memberStmt->execute(['id' => $r['id']]);
+            $members = $memberStmt->fetchAll();
+            fputcsv($output, [
+                $safeForSpreadsheet($r['team_name']),
+                $safeForSpreadsheet($r['leader_name']),
+                $safeForSpreadsheet(implode(' | ', array_column($members, 'member_name'))),
+                $safeForSpreadsheet(implode(' | ', array_column($members, 'member_class'))),
+                $safeForSpreadsheet($r['created_at']),
+            ]);
+        }
+        fclose($output);
+        exit;
+    } catch (PDOException $e) {
+        error_log('Admin export DB error: ' . $e->getMessage());
+        http_response_code(500);
+        exit('Could not export registrations.');
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — FRACTURE // POINT</title>
+<title>Admin — HACKTHON</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{ --cream:#F7F2EB; --ink:#0c0c0c; --red:#E63B2E; --line:rgba(12,12,12,0.1); }
@@ -45,7 +82,7 @@ $authed = !empty($_SESSION['admin_authed']);
   .back-home:hover{ color:var(--red); opacity:1; }
   .err{ color:var(--red); font-size:13px; }
   .topbar{ display:flex; justify-content:space-between; align-items:center; max-width:1000px; margin:0 auto 20px; }
-  .logout{ font-family:'Space Mono', monospace; font-size:12px; color:var(--ink); opacity:.6; text-decoration:none; }
+  .topbar-actions{display:flex;align-items:center;gap:16px}.logout,.export{ font-family:'Space Mono', monospace; font-size:12px; color:var(--ink); opacity:.6; text-decoration:none; }.export{color:#fff;background:var(--red);opacity:1;padding:9px 12px}.export:hover,.logout:hover{opacity:1;}
   table{ width:100%; max-width:1000px; margin:0 auto; border-collapse:collapse; background:#fff; }
   th, td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:13px; vertical-align:top; }
   th{ font-family:'Space Mono', monospace; font-size:11px; letter-spacing:.05em; opacity:.6; }
@@ -69,7 +106,10 @@ $authed = !empty($_SESSION['admin_authed']);
 
   <div class="topbar">
     <h1 style="margin:0;">Registered teams</h1>
-    <a class="logout" href="?logout=1">log out</a>
+    <div class="topbar-actions">
+      <a class="export" href="?export=csv">Export Excel</a>
+      <a class="logout" href="?logout=1">log out</a>
+    </div>
   </div>
 
   <?php

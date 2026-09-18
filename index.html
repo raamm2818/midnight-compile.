@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIDNIGHT // COMPILE — KLE BCA 24HR Hackathon 2026</title>
+<title>HACKTHON — KLE BCA 24HR Hackathon 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -35,8 +35,7 @@ html { font-size: 16px; scroll-behavior: smooth; }
 
 body {
   background:
-    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 56px 56px,
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 56px 56px,
+    radial-gradient(circle at 1px 1px, rgba(12,12,12,0.12) 0.8px, transparent 1px) 0 0 / 40px 40px,
     var(--bg);
   background-attachment: fixed;
   color: var(--ink);
@@ -270,24 +269,6 @@ body:has(button:hover) #cursor { width: 28px; height: 28px; border-radius: 50%; 
   width: 100%;
 }
 
-/* Video screen inside laptop */
-.laptop-screen-video {
-  position: absolute;
-  overflow: hidden;
-  border-radius: 3px;
-  background: #000;
-  opacity: 0;
-  transition: opacity 0.6s var(--ease) 0.4s;
-}
-
-#laptopWrap:hover #screenVideo { opacity: 1 !important; }
-
-.laptop-screen-video video {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
 /* Red accent dot behind laptop */
 .laptop-red-dot {
   position: absolute;
@@ -517,14 +498,12 @@ body:has(button:hover) #cursor { width: 28px; height: 28px; border-radius: 50%; 
   position: relative;
   overflow: hidden;
 }
-/* Grid-line backdrop instead of boxed columns */
+/* Dotted grid backdrop */
 .footer::before {
   content: '';
   position: absolute; inset: 0;
-  background-image:
-    linear-gradient(var(--grid-dark) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-dark) 1px, transparent 1px);
-  background-size: 50px 50px;
+  background-image: radial-gradient(circle at 1px 1px, var(--grid-dark) 0.8px, transparent 1px);
+  background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
 }
@@ -645,7 +624,24 @@ a:focus-visible, button:focus-visible {
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:900px){
+  .nav {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1rem 1.25rem;
+  }
+  .nav-right {
+    width: 100%;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    font-size: 0.55rem;
+    scrollbar-width: thin;
+  }
+  .nav-right a { display: inline-block; flex: 0 0 auto; }
+  .nav-cta { padding: 0.45rem 0.7rem; }
   .hero { grid-template-columns: 1fr; }
+  .hero { padding-top: 10.5rem; }
   .hero-right { display: none; }
   .details { grid-template-columns: 1fr; }
   .details-left { border-right: none; border-bottom: var(--border); padding: 3rem 1.5rem; }
@@ -654,7 +650,6 @@ a:focus-visible, button:focus-visible {
   .rule-card { border-right: none; border-bottom: var(--border); }
   .footer-top { grid-template-columns: 1fr 1fr; }
   .countdown { grid-template-columns: repeat(2, 1fr); }
-  .nav-right a:not(.nav-cta) { display: none; }
   .cta-sec { padding: 3rem 1.5rem; }
   .cta-sec { flex-direction: column; align-items: flex-start; }
   .poster-sec { padding: 3.5rem 1.5rem 4rem; }
@@ -669,7 +664,7 @@ a:focus-visible, button:focus-visible {
 
 <!-- ─── NAV ─── -->
 <nav class="nav">
-  <div class="nav-logo">MIDNIGHT<span> //<br>COMPILE</span></div>
+  <div class="nav-logo">HACKTHON</div>
   <div class="nav-right">
     <a href="#poster">Poster</a>
     <a href="#details">Details</a>
@@ -702,7 +697,7 @@ a:focus-visible, button:focus-visible {
     <p class="hero-eyebrow reveal">KLE Society's College of BCA, Bailhongal — 2026</p>
 
     <h1 class="hero-title reveal d1">
-      MIDNIGHT<br><span class="slash">//</span>COMPILE
+      HACKTHON
     </h1>
 
     <p class="hero-sub reveal d2">
@@ -737,19 +732,6 @@ a:focus-visible, button:focus-visible {
         <!-- Video screen overlay — positioned over the screen area -->
         <!-- Screen area in SVG: x=68,y=18,w=370,h=228 within 560×420 viewBox -->
         <!-- As percentages: left=12.14%, top=4.28%, w=66.07%, h=54.28% -->
-        <div class="laptop-screen-video" id="screenVideo" style="
-          position:absolute;
-          left:12.14%; top:4.28%;
-          width:66.07%; height:54.28%;
-          z-index:3; overflow:hidden; border-radius:3px;
-          opacity:0; transition:opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
-          pointer-events:none;
-        ">
-          <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
-            <source src="screen.mp4" type="video/mp4">
-          </video>
-        </div>
-
         <!-- SVG laptop with reassembly parts -->
         <svg id="laptopSvg" viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" fill="none" style="width:100%;display:block;position:relative;z-index:2">
           <defs>
@@ -864,7 +846,7 @@ a:focus-visible, button:focus-visible {
 
       <!-- Blueprint label -->
       <div style="text-align:right;margin-top:0.8rem;">
-        <span style="font-family:var(--font-m);font-size:0.56rem;color:var(--ink-faint);letter-spacing:0.08em;">[560,420] — KLE//MIDNIGHT COMPILE UNIT</span>
+        <span style="font-family:var(--font-m);font-size:0.56rem;color:var(--ink-faint);letter-spacing:0.08em;">[560,420] — KLE//HACKTHON UNIT</span>
       </div>
     </div><!-- /laptop-wrap -->
   </div><!-- /hero-right -->
@@ -922,9 +904,9 @@ a:focus-visible, button:focus-visible {
     <span class="corner br"></span>
 
     <!-- Replace this .poster-placeholder block with:
-         <img src="poster.jpg" alt="MIDNIGHT // COMPILE hackathon poster" class="poster-img">
+         <img src="poster-hackthon.png" alt="HACKTHON poster" class="poster-img">
          Recommended size: 1200×1600px (portrait, 3:4) -->
-    <img src="poster.png" alt="MIDNIGHT // COMPILE hackathon poster" class="poster-img">
+    <img src="poster-hackthon.png" alt="HACKTHON poster" class="poster-img">
     <!--
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
         <rect x="2" y="3" width="20" height="18" rx="2" stroke="currentColor" stroke-width="1.4" opacity="0.5"/>
@@ -1063,12 +1045,12 @@ a:focus-visible, button:focus-visible {
   </div>
 
   <div class="wordmark-row">
-    <p class="wordmark" data-text="MIDNIGHT // COMPILE 2026">MIDNIGHT // COMPILE 2026</p>
+    <p class="wordmark" data-text="HACKTHON 2026">HACKTHON 2026</p>
   </div>
 
   <div class="footer-bar">
     <p class="footer-copy">©2026 KLE SOCIETY'S COLLEGE OF BCA, BAILHONGAL. ALL RIGHTS RESERVED.</p>
-    <p class="footer-credit"><span class="cdot"></span>Designed &amp; Built by <a href="admin.html"><strong>Rash</strong></a></p>
+    <p class="footer-credit"><span class="cdot"></span>Designed &amp; Built by <a href="admin.php"><strong>Rash</strong></a></p>
     <div class="footer-bar-links">
       <a href="#">Privacy</a>
       <a href="#">Terms</a>
@@ -1115,7 +1097,7 @@ document.addEventListener('mousemove', e => {
 
 // ─── COUNTDOWN ───
 function tick() {
-  const target = new Date('2026-09-23T23:59:00');
+  const target = new Date('2026-09-25T10:00:00');
   const diff = target - new Date();
   if (diff <= 0) {
     ['cdays','chours','cmins','csecs'].forEach(id => document.getElementById(id).textContent = '00');
@@ -1141,15 +1123,6 @@ setTimeout(() => {
 }, 80);
 
 // ─── LAPTOP HOVER → reassembly + video ───
-const laptopWrap = document.getElementById('laptopWrap');
-laptopWrap.addEventListener('mouseenter', () => {
-  const vid = laptopWrap.querySelector('video');
-  if (vid) { vid.play().catch(()=>{}); }
-});
-laptopWrap.addEventListener('mouseleave', () => {
-  // parts scatter back handled by CSS removing hover state
-});
-
 // ─── AMBIENT PARTICLES — small, slow-drifting dots ───
 (function () {
   const container = document.getElementById('heroParticles');

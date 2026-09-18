@@ -5,6 +5,22 @@ const COOKIE_NAME = 'hackathon_admin';
 const SESSION_SECONDS = 60 * 60 * 12;
 
 function json(res, status, body) { res.status(status).json(body); }
+function csvCell(value) {
+  let text = String(value ?? '');
+  if (/^[=+\-@]/.test(text)) text = `'${text}`;
+  return `"${text.replace(/"/g, '""')}"`;
+}
+function registrationsCsv(teams) {
+  const rows = [['Team Name', 'Leader Name', 'Member Names', 'Member Classes', 'Registered At']];
+  teams.forEach(team => rows.push([
+    team.team_name,
+    team.leader_name,
+    (team.members || []).map(member => member.name).join(' | '),
+    (team.members || []).map(member => member.className).join(' | '),
+    team.created_at,
+  ]));
+  return `\uFEFF${rows.map(row => row.map(csvCell).join(',')).join('\r\n')}`;
+}
 function secret() { return process.env.SESSION_SECRET || ''; }
 function makeToken() {
   const payload = Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + SESSION_SECONDS })).toString('base64url');
@@ -54,6 +70,12 @@ export default async function handler(req, res) {
       GROUP BY r.id
       ORDER BY r.created_at DESC
     `;
+    if (req.query?.export === 'csv') {
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', 'attachment; filename="hackthon-registrations.csv"');
+      res.setHeader('Cache-Control', 'no-store');
+      return res.status(200).send(registrationsCsv(teams));
+    }
     return json(res, 200, { success: true, teams });
   } catch (error) {
     console.error('Admin database error:', error);

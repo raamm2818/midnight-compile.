@@ -130,7 +130,7 @@ try {
     }
 
     $pdo->commit();
-    respond(true, "Team registered — see you at FRACTURE // POINT.");
+    respond(true, "Team registered — see you at HACKTHON.");
 
 } catch (PDOException $e) {
     if ($pdo !== null && $pdo->inTransaction()) {
