@@ -37,7 +37,7 @@ const escapeHtml = value => String(value).replace(/[&<>'"]/g, char => ({'&':'&am
 function showTeams(teams) {
   loginView.classList.add('hidden'); teamsView.classList.remove('hidden');
   if (!teams.length) { content.innerHTML = '<p class="empty">No registrations yet.</p>'; return; }
-  content.innerHTML = `<table><thead><tr><th>Team</th><th>Leader</th><th>Members</th><th>Registered</th></tr></thead><tbody>${teams.map(team => `<tr><td><strong>${escapeHtml(team.team_name)}</strong></td><td>${escapeHtml(team.leader_name)} <span class="leader-tag">LEADER</span></td><td>${team.members.map(member => `${escapeHtml(member.name)} (${escapeHtml(member.className)})`).join('<br>')}</td><td>${new Date(team.created_at).toLocaleString()}</td></tr>`).join('')}</tbody></table>`;
+  content.innerHTML = `<table><thead><tr><th>Team</th><th>Leader</th><th>Problem ID</th><th>Members</th><th>Registered</th></tr></thead><tbody>${teams.map(team => `<tr><td><strong>${escapeHtml(team.team_name)}</strong></td><td>${escapeHtml(team.leader_name)} <span class="leader-tag">LEADER</span></td><td>${escapeHtml(team.problem_statement_id)}</td><td>${team.members.map(member => `${escapeHtml(member.name)} (${escapeHtml(member.className)})`).join('<br>')}</td><td>${new Date(team.created_at).toLocaleString()}</td></tr>`).join('')}</tbody></table>`;
 }
 async function loadTeams() {
   const response = await fetch('/api/admin');

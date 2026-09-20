@@ -153,6 +153,10 @@
     <div class="hint">Must be a final-year student.</div>
     <div class="field-err" id="err_leader_name">Enter the team leader's name.</div>
 
+    <label for="problem_statement_id">Problem statement ID *</label>
+    <input type="text" id="problem_statement_id" name="problem_statement_id" placeholder="e.g. SIH26001" required>
+    <div class="field-err" id="err_problem_statement_id">Enter a problem statement ID.</div>
+
     <div class="section-title">// TEAM MEMBERS</div>
     <div id="membersList"></div>
     <button type="button" class="add-member" id="addMemberBtn">+ Add member</button>
@@ -234,6 +238,7 @@
     let ok = true;
     if(!data.team_name.trim()){ showFieldError('team_name', true); ok = false; } else showFieldError('team_name', false);
     if(!data.leader_name.trim()){ showFieldError('leader_name', true); ok = false; } else showFieldError('leader_name', false);
+    if(!data.problem_statement_id.trim()){ showFieldError('problem_statement_id', true); ok = false; } else showFieldError('problem_statement_id', false);
     members.forEach(m => { if(!m.name || !m.class_name) ok = false; });
     return ok;
   }
@@ -257,6 +262,7 @@
         body: JSON.stringify({
           team_name: data.team_name,
           leader_name: data.leader_name,
+          problem_statement_id: data.problem_statement_id,
           members: members
         })
       });

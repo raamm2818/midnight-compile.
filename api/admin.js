@@ -11,10 +11,11 @@ function csvCell(value) {
   return `"${text.replace(/"/g, '""')}"`;
 }
 function registrationsCsv(teams) {
-  const rows = [['Team Name', 'Leader Name', 'Member Names', 'Member Classes', 'Registered At']];
+  const rows = [['Team Name', 'Leader Name', 'Problem Statement ID', 'Member Names', 'Member Classes', 'Registered At']];
   teams.forEach(team => rows.push([
     team.team_name,
     team.leader_name,
+    team.problem_statement_id,
     (team.members || []).map(member => member.name).join(' | '),
     (team.members || []).map(member => member.className).join(' | '),
     team.created_at,
@@ -62,7 +63,7 @@ export default async function handler(req, res) {
   try {
     const sql = getSql();
     const teams = await sql`
-      SELECT r.id, r.team_name, r.leader_name, r.created_at,
+      SELECT r.id, r.team_name, r.leader_name, r.problem_statement_id, r.created_at,
         COALESCE(json_agg(json_build_object('name', m.member_name, 'className', m.member_class) ORDER BY m.position)
           FILTER (WHERE m.id IS NOT NULL), '[]') AS members
       FROM registrations r

@@ -10,11 +10,13 @@ export default async function handler(req, res) {
   const input = req.body && typeof req.body === 'object' ? req.body : {};
   const teamName = String(input.team_name || '').trim();
   const leaderName = String(input.leader_name || '').trim();
+  const problemStatementId = String(input.problem_statement_id || '').trim();
   const sourceMembers = Array.isArray(input.members) ? input.members : [];
   const errors = [];
 
   if (!teamName || teamName.length > 150) errors.push('Team name is required.');
   if (!leaderName || leaderName.length > 150) errors.push('Team leader name is required.');
+  if (!problemStatementId || problemStatementId.length > 100) errors.push('Problem statement ID is required.');
 
   const members = [];
   for (const member of sourceMembers) {
@@ -33,8 +35,8 @@ export default async function handler(req, res) {
   try {
     const sql = getSql();
     const inserted = await sql`
-      INSERT INTO registrations (team_name, leader_name)
-      VALUES (${teamName}, ${leaderName})
+      INSERT INTO registrations (team_name, leader_name, problem_statement_id)
+      VALUES (${teamName}, ${leaderName}, ${problemStatementId})
       RETURNING id
     `;
     const registrationId = inserted[0].id;

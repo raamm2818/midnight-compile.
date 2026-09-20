@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS registrations (
   id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   team_name       VARCHAR(150)  NOT NULL,
   leader_name     VARCHAR(150)  NOT NULL,
+  problem_statement_id VARCHAR(100) NOT NULL,
   created_at      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uq_team_name (team_name)
 ) ENGINE=InnoDB;

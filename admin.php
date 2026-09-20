@@ -41,7 +41,7 @@ if ($authed && ($_GET['export'] ?? '') === 'csv') {
             $value = (string) $value;
             return preg_match('/^[=+\-@]/', $value) ? "'" . $value : $value;
         };
-        fputcsv($output, ['Team Name', 'Leader Name', 'Member Names', 'Member Classes', 'Registered At']);
+        fputcsv($output, ['Team Name', 'Leader Name', 'Problem Statement ID', 'Member Names', 'Member Classes', 'Registered At']);
 
         foreach ($regs as $r) {
             $memberStmt->execute(['id' => $r['id']]);
@@ -49,6 +49,7 @@ if ($authed && ($_GET['export'] ?? '') === 'csv') {
             fputcsv($output, [
                 $safeForSpreadsheet($r['team_name']),
                 $safeForSpreadsheet($r['leader_name']),
+                $safeForSpreadsheet($r['problem_statement_id']),
                 $safeForSpreadsheet(implode(' | ', array_column($members, 'member_name'))),
                 $safeForSpreadsheet(implode(' | ', array_column($members, 'member_class'))),
                 $safeForSpreadsheet($r['created_at']),
@@ -128,6 +129,7 @@ if ($authed && ($_GET['export'] ?? '') === 'csv') {
         <tr>
           <th>Team</th>
           <th>Leader</th>
+          <th>Problem ID</th>
           <th>Members</th>
           <th>Registered</th>
         </tr>
@@ -141,6 +143,7 @@ if ($authed && ($_GET['export'] ?? '') === 'csv') {
           <tr>
             <td><strong><?= htmlspecialchars($r['team_name']) ?></strong></td>
             <td><?= htmlspecialchars($r['leader_name']) ?> <span class="leader-tag">LEADER</span></td>
+            <td><?= htmlspecialchars($r['problem_statement_id']) ?></td>
             <td>
               <?php foreach ($members as $m): ?>
                 <?= htmlspecialchars($m['member_name']) ?> (<?= htmlspecialchars($m['member_class']) ?>)<br>

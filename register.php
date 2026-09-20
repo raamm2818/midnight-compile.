@@ -39,6 +39,7 @@ if (!is_array($input)) {
 // --- Collect + trim fields -------------------------------------------------
 $team_name     = trim((string)($input['team_name'] ?? ''));
 $leader_name   = trim((string)($input['leader_name'] ?? ''));
+$problem_statement_id = trim((string)($input['problem_statement_id'] ?? ''));
 $members_input = $input['members'] ?? [];
 
 if (!is_array($members_input)) {
@@ -53,6 +54,9 @@ if ($team_name === '' || mb_strlen($team_name) > 150) {
 }
 if ($leader_name === '' || mb_strlen($leader_name) > 150) {
     $errors[] = 'Team leader name is required.';
+}
+if ($problem_statement_id === '' || mb_strlen($problem_statement_id) > 100) {
+    $errors[] = 'Problem statement ID is required.';
 }
 
 $members = [];
@@ -108,11 +112,12 @@ try {
     }
 
     $stmt = $pdo->prepare(
-        'INSERT INTO registrations (team_name, leader_name) VALUES (:team_name, :leader_name)'
+        'INSERT INTO registrations (team_name, leader_name, problem_statement_id) VALUES (:team_name, :leader_name, :problem_statement_id)'
     );
     $stmt->execute([
         'team_name'   => $team_name,
         'leader_name' => $leader_name,
+        'problem_statement_id' => $problem_statement_id,
     ]);
     $registration_id = (int)$pdo->lastInsertId();
 
