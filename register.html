@@ -142,7 +142,7 @@
   <form class="card" id="regForm" novalidate>
     <div class="eyebrow">// REGISTRATION</div>
     <h1>Enter the<br>hackathon</h1>
-    <p class="sub">Register your team for HACKTHON. One entry per team.</p>
+    <p class="sub">Register one complete team: 1 leader and 5 members.</p>
 
     <label for="team_name">Team name *</label>
     <input type="text" id="team_name" name="team_name" required>
@@ -159,8 +159,6 @@
 
     <div class="section-title">// TEAM MEMBERS</div>
     <div id="membersList"></div>
-    <button type="button" class="add-member" id="addMemberBtn">+ Add member</button>
-
     <button type="submit" class="submit" id="submitBtn">Register</button>
     <div class="msg" id="formMsg"></div>
   </form>
@@ -187,24 +185,20 @@
   const msg          = document.getElementById('formMsg');
   const btn          = document.getElementById('submitBtn');
   const membersList  = document.getElementById('membersList');
-  const addMemberBtn = document.getElementById('addMemberBtn');
   const template     = document.getElementById('memberTemplate');
 
-  const MIN_MEMBERS = 1;   // at least one member besides the leader
-  const MAX_MEMBERS = 5;   // so a team tops out at 6 people (leader + 5)
+  const TEAM_MEMBERS = 5; // 1 leader + 5 members, matching the published event rule
 
   function refreshLabelsAndButtons(){
     const members = membersList.querySelectorAll('.member');
     members.forEach((el, i) => {
       el.querySelector('.member-label').textContent = 'Member ' + (i + 1);
-      const removeBtn = el.querySelector('.remove-member');
-      removeBtn.style.display = (members.length > MIN_MEMBERS) ? 'inline' : 'none';
+      el.querySelector('.remove-member').style.display = 'none';
     });
-    addMemberBtn.disabled = members.length >= MAX_MEMBERS;
   }
 
   function addMember(){
-    if (membersList.querySelectorAll('.member').length >= MAX_MEMBERS) return;
+    if (membersList.querySelectorAll('.member').length >= TEAM_MEMBERS) return;
     const node = template.content.cloneNode(true);
     node.querySelector('.remove-member').addEventListener('click', function(e){
       e.target.closest('.member').remove();
@@ -214,8 +208,7 @@
     refreshLabelsAndButtons();
   }
 
-  for (let i = 0; i < MIN_MEMBERS; i++) addMember();
-  addMemberBtn.addEventListener('click', addMember);
+  for (let i = 0; i < TEAM_MEMBERS; i++) addMember();
 
   function showFieldError(id, show){
     const el = document.getElementById('err_' + id);
@@ -273,7 +266,7 @@
         msg.className = 'msg show ok';
         form.reset();
         membersList.innerHTML = '';
-        for (let i = 0; i < MIN_MEMBERS; i++) addMember();
+        for (let i = 0; i < TEAM_MEMBERS; i++) addMember();
       } else {
         msg.textContent = result.message || 'Something went wrong. Please try again.';
         msg.className = 'msg show err';

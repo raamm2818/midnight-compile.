@@ -7,6 +7,10 @@ CREATE TABLE IF NOT EXISTS registrations (
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Safe to run on an older database created before problem_statement_id existed.
+ALTER TABLE registrations
+  ADD COLUMN IF NOT EXISTS problem_statement_id VARCHAR(100) NOT NULL DEFAULT '';
+
 CREATE TABLE IF NOT EXISTS team_members (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   registration_id BIGINT NOT NULL REFERENCES registrations(id) ON DELETE CASCADE,

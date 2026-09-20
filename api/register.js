@@ -28,22 +28,29 @@ export default async function handler(req, res) {
     if (name.length > 150 || className.length > 100) { errors.push('A member detail is too long.'); continue; }
     members.push({ name, className });
   }
-  if (members.length < 1) errors.push('Add at least one team member.');
-  if (members.length > 5) errors.push('A team can have at most 5 members plus the leader.');
+  if (members.length !== 5) errors.push('A team must have exactly 5 members plus the leader.');
   if (errors.length) return send(res, 422, false, errors.join(' '));
 
   try {
     const sql = getSql();
-    const inserted = await sql`
-      INSERT INTO registrations (team_name, leader_name, problem_statement_id)
-      VALUES (${teamName}, ${leaderName}, ${problemStatementId})
-      RETURNING id
-    `;
-    const registrationId = inserted[0].id;
-    await Promise.all(members.map((member, position) => sql`
+    // One SQL statement means the team and its members are saved together or not at all.
+    const membersJson = JSON.stringify(members.map((member, position) => ({
+      name: member.name,
+      className: member.className,
+      position,
+    })));
+    await sql`
+      WITH new_registration AS (
+        INSERT INTO registrations (team_name, leader_name, problem_statement_id)
+        VALUES (${teamName}, ${leaderName}, ${problemStatementId})
+        RETURNING id
+      )
       INSERT INTO team_members (registration_id, member_name, member_class, position)
-      VALUES (${registrationId}, ${member.name}, ${member.className}, ${position})
-    `));
+      SELECT new_registration.id, member.name, member.class_name, member.position
+      FROM new_registration
+      CROSS JOIN jsonb_to_recordset(${membersJson}::jsonb)
+        AS member(name text, class_name text, position integer)
+    `;
     return send(res, 201, true, 'Team registered successfully.');
   } catch (error) {
     if (error && error.code === '23505') return send(res, 409, false, 'That team name is already registered.');
