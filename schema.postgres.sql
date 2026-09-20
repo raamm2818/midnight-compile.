@@ -1,4 +1,4 @@
--- Run this in the Neon SQL Editor once, before using the deployed app.
+-- Run this in the Supabase SQL Editor once, before using the deployed app.
 CREATE TABLE IF NOT EXISTS registrations (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   team_name VARCHAR(150) NOT NULL UNIQUE,
