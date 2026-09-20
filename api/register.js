@@ -47,6 +47,12 @@ export default async function handler(req, res) {
     return send(res, 201, true, 'Team registered successfully.');
   } catch (error) {
     if (error && error.code === '23505') return send(res, 409, false, 'That team name is already registered.');
+    if (error && error.code === 'DATABASE_NOT_CONFIGURED') {
+      return send(res, 503, false, 'Registration is not configured yet. The organizer must add DATABASE_URL in Vercel and redeploy.');
+    }
+    if (error && error.code === '42P01') {
+      return send(res, 503, false, 'Registration database is not ready yet. The organizer must run schema.postgres.sql in Neon.');
+    }
     console.error('Registration database error:', error);
     return send(res, 500, false, 'Server error — please try again later.');
   }
