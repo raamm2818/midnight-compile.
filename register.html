@@ -249,7 +249,10 @@
     btn.textContent = 'Submitting...';
 
     try{
-      const res = await fetch('/api/register', {
+      // Vercel serves the Node function at /api/register. When the project is
+      // opened through XAMPP, use the PHP handler available to Apache.
+      const isLocalXampp = ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
+      const res = await fetch(isLocalXampp ? 'register.php' : '/api/register', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({

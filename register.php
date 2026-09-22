@@ -143,5 +143,11 @@ try {
     }
     // Never leak DB details to the client; log server-side instead.
     error_log('Registration DB error: ' . $e->getMessage());
+    if ($e->getCode() === '2002') {
+        respond(false, 'Registration database is unavailable. Start MySQL in the XAMPP Control Panel, then try again.', 503);
+    }
+    if ($e->getCode() === '1049') {
+        respond(false, 'Registration database is not set up. Create the fracture_point database and run schema.sql, then try again.', 503);
+    }
     respond(false, 'Server error — please try again later.', 500);
 }
