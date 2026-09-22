@@ -19,6 +19,10 @@ function databaseSetupMessage(error) {
     case 'ENOTFOUND':
     case 'ETIMEDOUT':
     case 'ECONNRESET':
+    case '08001':
+    case '08006':
+    case '57P01':
+    case '53300':
       return 'Registration database could not be reached. Verify the Supabase DATABASE_URL in Vercel and redeploy.';
     default:
       return null;
@@ -54,24 +58,20 @@ export default async function handler(req, res) {
 
   try {
     const sql = getSql();
-    // One SQL statement means the team and its members are saved together or not at all.
-    const membersJson = JSON.stringify(members.map((member, position) => ({
-      name: member.name,
-      className: member.className,
-      position,
-    })));
-    await sql`
-      WITH new_registration AS (
+    // Keep the team and roster together while avoiding a fragile JSON query.
+    await sql.begin(async (transaction) => {
+      const [registration] = await transaction`
         INSERT INTO registrations (team_name, leader_name, problem_statement_id)
         VALUES (${teamName}, ${leaderName}, ${problemStatementId})
         RETURNING id
-      )
-      INSERT INTO team_members (registration_id, member_name, member_class, position)
-      SELECT new_registration.id, member.name, member.class_name, member.position
-      FROM new_registration
-      CROSS JOIN jsonb_to_recordset(${membersJson}::jsonb)
-        AS member(name text, class_name text, position integer)
-    `;
+      `;
+      for (const [position, member] of members.entries()) {
+        await transaction`
+          INSERT INTO team_members (registration_id, member_name, member_class, position)
+          VALUES (${registration.id}, ${member.name}, ${member.className}, ${position})
+        `;
+      }
+    });
     return send(res, 201, true, 'Team registered successfully.');
   } catch (error) {
     if (error && error.code === '23505') return send(res, 409, false, 'That team name is already registered.');
@@ -81,6 +81,9 @@ export default async function handler(req, res) {
     const setupMessage = databaseSetupMessage(error);
     if (setupMessage) return send(res, 503, false, setupMessage);
     console.error('Registration database error:', error);
-    return send(res, 500, false, 'Server error — please try again later.');
+    const databaseCode = typeof error?.code === 'string' && /^[A-Z0-9_]{1,12}$/.test(error.code)
+      ? ` (database code: ${error.code})`
+      : '';
+    return send(res, 500, false, `Registration could not be saved${databaseCode}. Check the Vercel Function logs.`);
   }
 }
