@@ -4,6 +4,27 @@ function send(res, status, success, message) {
   res.status(status).json({ success, message });
 }
 
+function databaseSetupMessage(error) {
+  switch (error && error.code) {
+    case '42P01':
+    case '42703':
+      return 'Registration database is not ready yet. Run schema.postgres.sql in the Supabase SQL Editor, then try again.';
+    case '28P01':
+      return 'Registration database credentials were rejected. Update DATABASE_URL in Vercel and redeploy.';
+    case '3D000':
+      return 'The database named in DATABASE_URL does not exist. Update DATABASE_URL in Vercel and redeploy.';
+    case '42501':
+      return 'The database user does not have permission to save registrations. Use the Supabase connection string in DATABASE_URL.';
+    case 'ECONNREFUSED':
+    case 'ENOTFOUND':
+    case 'ETIMEDOUT':
+    case 'ECONNRESET':
+      return 'Registration database could not be reached. Verify the Supabase DATABASE_URL in Vercel and redeploy.';
+    default:
+      return null;
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return send(res, 405, false, 'Invalid request method.');
 
@@ -57,9 +78,8 @@ export default async function handler(req, res) {
     if (error && error.code === 'DATABASE_NOT_CONFIGURED') {
       return send(res, 503, false, 'Registration is not configured yet. The organizer must add DATABASE_URL in Vercel and redeploy.');
     }
-    if (error && error.code === '42P01') {
-      return send(res, 503, false, 'Registration database is not ready yet. The organizer must run schema.postgres.sql in Neon.');
-    }
+    const setupMessage = databaseSetupMessage(error);
+    if (setupMessage) return send(res, 503, false, setupMessage);
     console.error('Registration database error:', error);
     return send(res, 500, false, 'Server error — please try again later.');
   }

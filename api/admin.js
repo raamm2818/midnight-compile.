@@ -82,8 +82,8 @@ export default async function handler(req, res) {
     if (error && error.code === 'DATABASE_NOT_CONFIGURED') {
       return json(res, 503, { success: false, message: 'Registrations are not configured yet. The organizer must add DATABASE_URL in Vercel and redeploy.' });
     }
-    if (error && error.code === '42P01') {
-      return json(res, 503, { success: false, message: 'Registrations database is not ready yet. The organizer must run schema.postgres.sql in Neon.' });
+    if (error && (error.code === '42P01' || error.code === '42703')) {
+      return json(res, 503, { success: false, message: 'Registrations database is not ready yet. Run schema.postgres.sql in the Supabase SQL Editor, then try again.' });
     }
     console.error('Admin database error:', error);
     return json(res, 500, { success: false, message: 'Could not load registrations.' });
